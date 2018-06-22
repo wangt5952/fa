@@ -1,0 +1,53 @@
+{% extends "base/sys.html" %}
+
+{% set nav = 'config' %}
+{% block content %}
+<div class="container">
+  <form action="#">
+    <div class="row">
+
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label>配置内容</label>
+          <p class="help-block">
+            每块使用空行隔开，第一行为表名，其他行为字段
+          </p>
+          <textarea name="content" rows="20" class="form-control">{{item.value}}</textarea>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <button type="submit" class="btn btn-primary btn-sm">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(function(){
+
+  $('form').parsley().on('form:submit', function(){
+
+    var $form = this.$element;
+    var data = $form.serializeJSON()
+
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        history.go(-1);
+      }
+    })
+    return false;
+  })
+})
+</script>
+{% endblock %}

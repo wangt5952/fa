@@ -1,0 +1,772 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="row" style="margin-bottom:20px;border-bottom:1px solid #dcdcde;">
+    <div class="col-sm-12">
+      <div class="btn-group pull-right">
+        <a href="set_param?id={{item.id}}" class="btn btn-info btn-sm"><i class="fa fa-cogs"></i> 设置分析参数</a>
+        <a href="finish?id={{item.id}}" class="btn btn-info btn-sm"><i class="fa fa-play"></i> 生成分析报告</a>
+      </div>
+      <ol class="breadcrumb steps">
+        <li class="active">确认财务数据</li>
+        <li><a href="#">设置分析参数</a></li>
+        <li><a href="#">生成分析结果</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="row" style="margin-bottom:20px;background-color:#fff;">
+    <div class="col-sm-12 form-inline" style="margin-top:30px;margin-bottom:30px;">
+      <div class="form-group">
+        <label>企业名称</label>
+        <input name="name" value="{{item.name}}" type="text" class="form-control" style="width:300px;">
+      </div>
+
+      <div class="form-group">
+        <label>报表模版</label>
+        <select class="form-control" name="template_id">
+        {% for o in templateList %}
+        <option value="{{o.id}}" {{'selected' if o.id == item.template_id}}>{{o.name}}</option>
+        {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:20px;">
+
+    <div class="col-sm-12">
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+          <a href="#home" aria-controls="home" role="tab" data-toggle="tab">资产负债表</a>
+        </li>
+        <li role="presentation">
+          <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">利润表</a>
+        </li>
+        <li role="presentation">
+          <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">现金流量表</a>
+        </li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="home">
+
+
+          <table class="table table-bordered text-center">
+            <tr>
+              <td>项目</td>
+              <td>期末余额</td>
+              <td>年初余额</td>
+              <td>项目</td>
+              <td>期末余额</td>
+              <td>年初余额</td>
+            </tr>
+            <tr>
+              <td class="text-left">流动资产：</td>
+              <td></td>
+              <td></td>
+              <td class="text-left">流动负债：</td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>货币资金</td>
+              <td>{{item.table_value['资产负债表']['货币资金'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['货币资金'][1]}}</td>
+              <td>短期借款</td>
+              <td>{{item.table_value['资产负债表']['短期借款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['短期借款'][1]}}</td>
+            </tr>
+            <tr>
+              <td>应收票据</td>
+              <td>{{item.table_value['资产负债表']['应收票据'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应收票据'][1]}}</td>
+              <td>应付票据</td>
+              <td>{{item.table_value['资产负债表']['应付票据'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应付票据'][1]}}</td>
+            </tr>
+            <tr>
+              <td>应收账款</td>
+              <td>{{item.table_value['资产负债表']['应收账款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应收账款'][1]}}</td>
+              <td>应付账款</td>
+              <td>{{item.table_value['资产负债表']['应付账款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应付账款'][1]}}</td>
+            </tr>
+            <tr>
+              <td>预付款项</td>
+              <td>{{item.table_value['资产负债表']['预付款项'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['预付款项'][1]}}</td>
+              <td>预收款项</td>
+              <td>{{item.table_value['资产负债表']['预收款项'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['预收款项'][1]}}</td>
+            </tr>
+            <tr>
+              <td>应收利息</td>
+              <td>{{item.table_value['资产负债表']['应收利息'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应收利息'][1]}}</td>
+              <td>应付职工薪酬</td>
+              <td>{{item.table_value['资产负债表']['应付职工薪酬'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应付职工薪酬'][1]}}</td>
+            </tr>
+            <tr>
+              <td>应收股利</td>
+              <td>{{item.table_value['资产负债表']['应收股利'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应收股利'][1]}}</td>
+              <td>应交税费</td>
+              <td>{{item.table_value['资产负债表']['应交税费'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应交税费'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其他应收款</td>
+              <td>{{item.table_value['资产负债表']['其他应收款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其他应收款'][1]}}</td>
+              <td>应付利息</td>
+              <td>{{item.table_value['资产负债表']['应付利息'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应付利息'][1]}}</td>
+            </tr>
+            <tr>
+              <td>存货</td>
+              <td>{{item.table_value['资产负债表']['存货'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['存货'][1]}}</td>
+              <td>应付股利</td>
+              <td>{{item.table_value['资产负债表']['应付股利'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['应付股利'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其中：原材料</td>
+              <td>{{item.table_value['资产负债表']['其中：原材料'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其中：原材料'][1]}}</td>
+              <td>其他应付款</td>
+              <td>{{item.table_value['资产负债表']['其他应付款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其他应付款'][1]}}</td>
+            </tr>
+            <tr>
+              <td>库存商品(产成品)</td>
+              <td>{{item.table_value['资产负债表']['库存商品'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['库存商品'][1]}}</td>
+              <td>其他流动负债</td>
+              <td>{{item.table_value['资产负债表']['其他流动负债'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其他流动负债'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其他流动资产</td>
+              <td>{{item.table_value['资产负债表']['其他流动资产'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其他流动资产'][1]}}</td>
+              <td>流动负债合计</td>
+              <td>{{item.table_value['资产负债表']['流动负债合计'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['流动负债合计'][1]}}</td>
+            </tr>
+            <tr>
+              <td>流动资产合计</td>
+              <td>{{item.table_value['资产负债表']['流动资产合计'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['流动资产合计'][1]}}</td>
+              <td class="text-left">非流动负债：</td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="text-left">非流动资产：</td>
+              <td></td>
+              <td></td>
+              <td>长期借款</td>
+              <td>{{item.table_value['资产负债表']['长期借款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['长期借款'][1]}}</td>
+            </tr>
+            <tr>
+              <td>长期应收款</td>
+              <td>{{item.table_value['资产负债表']['长期应收款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['长期应收款'][1]}}</td>
+              <td>长期应付款</td>
+              <td>{{item.table_value['资产负债表']['长期应付款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['长期应付款'][1]}}</td>
+            </tr>
+            <tr>
+              <td>长期股权投资</td>
+              <td>{{item.table_value['资产负债表']['长期股权投资'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['长期股权投资'][1]}}</td>
+              <td>专项应付款</td>
+              <td>{{item.table_value['资产负债表']['专项应付款'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['专项应付款'][1]}}</td>
+            </tr>
+            <tr>
+              <td>固定资产原价</td>
+              <td>{{item.table_value['资产负债表']['固定资产原价'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['固定资产原价'][1]}}</td>
+              <td>其他非流动负债</td>
+              <td>{{item.table_value['资产负债表']['其他非流动负债'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其他非流动负债'][1]}}</td>
+            </tr>
+            <tr>
+              <td>减：累计折旧</td>
+              <td>{{item.table_value['资产负债表']['累计折旧'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['累计折旧'][1]}}</td>
+              <td>非流动负债合计</td>
+              <td>{{item.table_value['资产负债表']['非流动负债合计'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['非流动负债合计'][1]}}</td>
+            </tr>
+            <tr>
+              <td>固定资产净值</td>
+              <td>{{item.table_value['资产负债表']['固定资产净值'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['固定资产净值'][1]}}</td>
+              <td>负债合计</td>
+              <td>{{item.table_value['资产负债表']['负债合计'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['负债合计'][1]}}</td>
+            </tr>
+            <tr>
+              <td>减：固定资产减值准备</td>
+              <td>{{item.table_value['资产负债表']['减：固定资产减值准备'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['减：固定资产减值准备'][1]}}</td>
+              <td class="text-left">所有者权益（或股东权益）：</td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>固定资产净额</td>
+              <td>{{item.table_value['资产负债表']['固定资产净额'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['固定资产净额'][1]}}</td>
+              <td>实收资本（股本）</td>
+              <td>{{item.table_value['资产负债表']['实收资本（股本）'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['实收资本（股本）'][1]}}</td>
+            </tr>
+            <tr>
+              <td>在建工程</td>
+              <td>{{item.table_value['资产负债表']['在建工程'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['在建工程'][1]}}</td>
+              <td>国有资本</td>
+              <td>{{item.table_value['资产负债表']['国有资本'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['国有资本'][1]}}</td>
+            </tr>
+            <tr>
+              <td>工程物资</td>
+              <td>{{item.table_value['资产负债表']['工程物资'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['工程物资'][1]}}</td>
+              <td>集体资本</td>
+              <td>{{item.table_value['资产负债表']['集体资本'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['集体资本'][1]}}</td>
+            </tr>
+            <tr>
+              <td>固定资产清理</td>
+              <td>{{item.table_value['资产负债表']['固定资产清理'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['固定资产清理'][1]}}</td>
+              <td>民营资本</td>
+              <td>{{item.table_value['资产负债表']['民营资本'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['民营资本'][1]}}</td>
+            </tr>
+            <tr>
+              <td>生产性生物资产</td>
+              <td>{{item.table_value['资产负债表']['生产性生物资产'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['生产性生物资产'][1]}}</td>
+              <td>外商资本</td>
+              <td>{{item.table_value['资产负债表']['外商资本'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['外商资本'][1]}}</td>
+            </tr>
+            <tr>
+              <td>无形资产</td>
+              <td>{{item.table_value['资产负债表']['无形资产'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['无形资产'][1]}}</td>
+              <td>资本公积</td>
+              <td>{{item.table_value['资产负债表']['资本公积'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['资本公积'][1]}}</td>
+            </tr>
+            <tr>
+              <td>开发支出</td>
+              <td>{{item.table_value['资产负债表']['开发支出'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['开发支出'][1]}}</td>
+              <td>其他综合收益</td>
+              <td>{{item.table_value['资产负债表']['其他综合收益'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其他综合收益'][1]}}</td>
+            </tr>
+            <tr>
+              <td>长期待摊费用</td>
+              <td>{{item.table_value['资产负债表']['长期待摊费用'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['长期待摊费用'][1]}}</td>
+              <td>专项储备</td>
+              <td>{{item.table_value['资产负债表']['专项储备'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['专项储备'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其他非流动资产</td>
+              <td>{{item.table_value['资产负债表']['其他非流动资产'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其他非流动资产'][1]}}</td>
+              <td>盈余公积</td>
+              <td>{{item.table_value['资产负债表']['盈余公积'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['盈余公积'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其中：特准储备物资</td>
+              <td>{{item.table_value['资产负债表']['其中：特准储备物资'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['其中：特准储备物资'][1]}}</td>
+              <td>未分配利润</td>
+              <td>{{item.table_value['资产负债表']['未分配利润'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['未分配利润'][1]}}</td>
+            </tr>
+            <tr>
+              <td>非流动资产合计</td>
+              <td>{{item.table_value['资产负债表']['非流动资产合计'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['非流动资产合计'][1]}}</td>
+              <td>所有者权益合计</td>
+              <td>{{item.table_value['资产负债表']['所有者权益合计'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['所有者权益合计'][1]}}</td>
+            </tr>
+            <tr>
+              <td>资产总计</td>
+              <td>{{item.table_value['资产负债表']['资产总计'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['资产总计'][1]}}</td>
+              <td>负债和所有者权益总计</td>
+              <td>{{item.table_value['资产负债表']['负债和所有者权益总计'][0]}}</td>
+              <td>{{item.table_value['资产负债表']['负债和所有者权益总计'][1]}}</td>
+            </tr>
+          </table>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="profile">
+          <table class="table table-bordered">
+            <tr>
+              <td>项目</td>
+              <td>本期金额</td>
+              <td>上期金额</td>
+              <td>项目</td>
+              <td>本期金额</td>
+              <td>上期金额</td>
+            </tr>
+            <tr>
+              <td>一、营业总收入</td>
+              <td>{{item.table_value['利润表']['营业总收入'][0]}}</td>
+              <td>{{item.table_value['利润表']['营业总收入'][1]}}</td>
+              <td>减：营业外支出</td>
+              <td>{{item.table_value['利润表']['减：营业外支出'][0]}}</td>
+              <td>{{item.table_value['利润表']['减：营业外支出'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其中：营业收入</td>
+              <td>{{item.table_value['利润表']['其中：营业收入'][0]}}</td>
+              <td>{{item.table_value['利润表']['其中：营业收入'][1]}}</td>
+              <td>其中：非流动资产处置损失</td>
+              <td>{{item.table_value['利润表']['其中：非流动资产处置损失'][0]}}</td>
+              <td>{{item.table_value['利润表']['其中：非流动资产处置损失'][1]}}</td>
+            </tr>
+            <tr>
+              <td>二、营业总成本</td>
+              <td>{{item.table_value['利润表']['营业总成本'][0]}}</td>
+              <td>{{item.table_value['利润表']['营业总成本'][1]}}</td>
+              <td>非货币性资产交换损失</td>
+              <td>{{item.table_value['利润表']['非货币性资产交换损失'][0]}}</td>
+              <td>{{item.table_value['利润表']['非货币性资产交换损失'][1]}}</td>
+            </tr>
+            <tr>
+              <td>营业成本</td>
+              <td>{{item.table_value['利润表']['营业成本'][0]}}</td>
+              <td>{{item.table_value['利润表']['营业成本'][1]}}</td>
+              <td>债务重组损失</td>
+              <td>{{item.table_value['利润表']['债务重组损失'][0]}}</td>
+              <td>{{item.table_value['利润表']['债务重组损失'][1]}}</td>
+            </tr>
+            <tr>
+              <td>税金及附加</td>
+              <td>{{item.table_value['利润表']['税金及附加'][0]}}</td>
+              <td>{{item.table_value['利润表']['税金及附加'][1]}}</td>
+              <td>四、利润总额（亏损总额以“－”号填列）</td>
+              <td>{{item.table_value['利润表']['利润总额'][0]}}</td>
+              <td>{{item.table_value['利润表']['利润总额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>销售费用</td>
+              <td>{{item.table_value['利润表']['销售费用'][0]}}</td>
+              <td>{{item.table_value['利润表']['销售费用'][1]}}</td>
+              <td>减：所得税费用</td>
+              <td>{{item.table_value['利润表']['减：所得税费用'][0]}}</td>
+              <td>{{item.table_value['利润表']['减：所得税费用'][1]}}</td>
+            </tr>
+            <tr>
+              <td>管理费用</td>
+              <td>{{item.table_value['利润表']['管理费用'][0]}}</td>
+              <td>{{item.table_value['利润表']['管理费用'][1]}}</td>
+              <td>五、净利润（净亏损以“－”号填列）</td>
+              <td>{{item.table_value['利润表']['净利润'][0]}}</td>
+              <td>{{item.table_value['利润表']['净利润'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其中：研究与开发费</td>
+              <td>{{item.table_value['利润表']['其中：研究与开发费'][0]}}</td>
+              <td>{{item.table_value['利润表']['其中：研究与开发费'][1]}}</td>
+              <td>归属于母公司所有者的净利润</td>
+              <td>{{item.table_value['利润表']['归属于母公司所有者的净利润'][0]}}</td>
+              <td>{{item.table_value['利润表']['归属于母公司所有者的净利润'][1]}}</td>
+            </tr>
+            <tr>
+              <td>党建工作经费</td>
+              <td>{{item.table_value['利润表']['党建工作经费'][0]}}</td>
+              <td>{{item.table_value['利润表']['党建工作经费'][1]}}</td>
+              <td>六、其他综合收益的税后净额</td>
+              <td>{{item.table_value['利润表']['其他综合收益的税后净额'][0]}}</td>
+              <td>{{item.table_value['利润表']['其他综合收益的税后净额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>财务费用</td>
+              <td>{{item.table_value['利润表']['财务费用'][0]}}</td>
+              <td>{{item.table_value['利润表']['财务费用'][1]}}</td>
+              <td>（一）以后不能重分类进损益的其他综合收益</td>
+              <td>{{item.table_value['利润表']['（一）以后不能重分类进损益的其他综合收益'][0]}}</td>
+              <td>{{item.table_value['利润表']['（一）以后不能重分类进损益的其他综合收益'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其中：利息支出</td>
+              <td>{{item.table_value['利润表']['其中：利息支出'][0]}}</td>
+              <td>{{item.table_value['利润表']['其中：利息支出'][1]}}</td>
+              <td>1.重新计量设定受益计划净负债或净资产的变动</td>
+              <td>{{item.table_value['利润表']['1.重新计量设定受益计划净负债或净资产的变动'][0]}}</td>
+              <td>{{item.table_value['利润表']['1.重新计量设定受益计划净负债或净资产的变动'][1]}}</td>
+            </tr>
+            <tr>
+              <td>利息收入</td>
+              <td>{{item.table_value['利润表']['利息收入'][0]}}</td>
+              <td>{{item.table_value['利润表']['利息收入'][1]}}</td>
+              <td>2.权益法下在被投资单位不能重分类进损益的其他综合收益中享有的份额</td>
+              <td>{{item.table_value['利润表']['2.权益法下在被投资单位不能重分类进损益的其他综合收益中享有的份额'][0]}}</td>
+              <td>{{item.table_value['利润表']['2.权益法下在被投资单位不能重分类进损益的其他综合收益中享有的份额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>汇兑净损失（净收益以“-”号填列）</td>
+              <td>{{item.table_value['利润表']['汇兑净损失（净收益以“-”号填列）'][0]}}</td>
+              <td>{{item.table_value['利润表']['汇兑净损失（净收益以“-”号填列）'][1]}}</td>
+              <td>（二）以后将重分类进损益的其他综合收益</td>
+              <td>{{item.table_value['利润表']['（二）以后将重分类进损益的其他综合收益'][0]}}</td>
+              <td>{{item.table_value['利润表']['（二）以后将重分类进损益的其他综合收益'][1]}}</td>
+            </tr>
+            <tr>
+              <td>资产减值损失</td>
+              <td>{{item.table_value['利润表']['资产减值损失'][0]}}</td>
+              <td>{{item.table_value['利润表']['资产减值损失'][1]}}</td>
+              <td>1.权益法下在被投资单位将重分类进损益的其他综合收益中享有的份额</td>
+              <td>{{item.table_value['利润表']['1.权益法下在被投资单位将重分类进损益的其他综合收益中享有的份额'][0]}}</td>
+              <td>{{item.table_value['利润表']['1.权益法下在被投资单位将重分类进损益的其他综合收益中享有的份额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其他</td>
+              <td>{{item.table_value['利润表']['其他'][0]}}</td>
+              <td>{{item.table_value['利润表']['其他'][1]}}</td>
+              <td>2.可供出售金融资产公允价值变动损益</td>
+              <td>{{item.table_value['利润表']['2.可供出售金融资产公允价值变动损益'][0]}}</td>
+              <td>{{item.table_value['利润表']['2.可供出售金融资产公允价值变动损益'][1]}}</td>
+            </tr>
+            <tr>
+              <td>加：公允价值变动收益（损失以“-”号填列）</td>
+              <td>{{item.table_value['利润表']['加：公允价值变动收益（损失以“-”号填列）'][0]}}</td>
+              <td>{{item.table_value['利润表']['加：公允价值变动收益（损失以“-”号填列）'][1]}}</td>
+              <td>3.持有至到期投资重分类为可供出售金融资产损益</td>
+              <td>{{item.table_value['利润表']['3.持有至到期投资重分类为可供出售金融资产损益'][0]}}</td>
+              <td>{{item.table_value['利润表']['3.持有至到期投资重分类为可供出售金融资产损益'][1]}}</td>
+            </tr>
+            <tr>
+              <td>投资收益（损失以“-”号填列）</td>
+              <td>{{item.table_value['利润表']['投资收益'][0]}}</td>
+              <td>{{item.table_value['利润表']['投资收益'][1]}}</td>
+              <td>4.现金流量套期损益的有效部分</td>
+              <td>{{item.table_value['利润表']['4.现金流量套期损益的有效部分'][0]}}</td>
+              <td>{{item.table_value['利润表']['4.现金流量套期损益的有效部分'][1]}}</td>
+            </tr>
+            <tr>
+              <td>'其中：对联营企业和合营企业的投资收益</td>
+              <td>{{item.table_value['利润表']['其中：对联营企业和合营企业的投资收益'][0]}}</td>
+              <td>{{item.table_value['利润表']['其中：对联营企业和合营企业的投资收益'][1]}}</td>
+              <td>5.外币财务报表折算差额</td>
+              <td>{{item.table_value['利润表']['5.外币财务报表折算差额'][0]}}</td>
+              <td>{{item.table_value['利润表']['5.外币财务报表折算差额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>三、营业利润（亏损以“－”号填列）</td>
+              <td>{{item.table_value['利润表']['营业利润'][0]}}</td>
+              <td>{{item.table_value['利润表']['营业利润'][1]}}</td>
+              <td>七、综合收益总额</td>
+              <td>{{item.table_value['利润表']['综合收益总额'][0]}}</td>
+              <td>{{item.table_value['利润表']['综合收益总额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>加：营业外收入</td>
+              <td>{{item.table_value['利润表']['营业外收入'][0]}}</td>
+              <td>{{item.table_value['利润表']['营业外收入'][1]}}</td>
+              <td>归属于母公司所有者的综合收益总额</td>
+              <td>{{item.table_value['利润表']['归属于母公司所有者的综合收益总额'][0]}}</td>
+              <td>{{item.table_value['利润表']['归属于母公司所有者的综合收益总额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>其中：非流动资产处置利得</td>
+              <td>{{item.table_value['利润表']['其中：非流动资产处置利得'][0]}}</td>
+              <td>{{item.table_value['利润表']['其中：非流动资产处置利得'][1]}}</td>
+              <td>*归属于少数股东的综合收益总额</td>
+              <td>{{item.table_value['利润表']['*归属于少数股东的综合收益总额'][0]}}</td>
+              <td>{{item.table_value['利润表']['*归属于少数股东的综合收益总额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>非货币性资产交换利得</td>
+              <td>{{item.table_value['利润表']['非货币性资产交换利得'][0]}}</td>
+              <td>{{item.table_value['利润表']['非货币性资产交换利得'][1]}}</td>
+              <td>八、每股收益：</td>
+              <td>{{item.table_value['利润表']['每股收益'][0]}}</td>
+              <td>{{item.table_value['利润表']['每股收益'][1]}}</td>
+            </tr>
+            <tr>
+              <td>政府补助</td>
+              <td>{{item.table_value['利润表']['政府补助'][0]}}</td>
+              <td>{{item.table_value['利润表']['政府补助'][1]}}</td>
+              <td>基本每股收益</td>
+              <td>{{item.table_value['利润表']['基本每股收益'][0]}}</td>
+              <td>{{item.table_value['利润表']['基本每股收益'][1]}}</td>
+            </tr>
+            <tr>
+              <td>债务重组利得</td>
+              <td>{{item.table_value['利润表']['债务重组利得'][0]}}</td>
+              <td>{{item.table_value['利润表']['债务重组利得'][1]}}</td>
+              <td>稀释每股收益</td>
+              <td>{{item.table_value['利润表']['稀释每股收益'][0]}}</td>
+              <td>{{item.table_value['利润表']['稀释每股收益'][1]}}</td>
+            </tr>
+          </table>
+          </div>
+        <div role="tabpanel" class="tab-pane" id="messages">
+          <table class="table table-bordered">
+            <tr>
+              <td>项目</td>
+              <td>本期金额</td>
+              <td>上期金额</td>
+              <td>项目</td>
+              <td>本期金额</td>
+              <td>上期金额</td>
+            </tr>
+            <tr>
+              <td>一、经营活动产生的现金流量：</td>
+              <td>{{item.table_value['现金流量表']['一、经营活动产生的现金流量：'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['一、经营活动产生的现金流量：'][1]}}</td>
+              <td>取得子公司及其他营业单位支付的现金净额</td>
+              <td>{{item.table_value['现金流量表']['取得子公司及其他营业单位支付的现金净额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['取得子公司及其他营业单位支付的现金净额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>销售商品、提供劳务收到的现金</td>
+              <td>{{item.table_value['现金流量表']['销售商品、提供劳务收到的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['销售商品、提供劳务收到的现金'][1]}}</td>
+              <td>支付其他与投资活动有关的现金</td>
+              <td>{{item.table_value['现金流量表']['支付其他与投资活动有关的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['支付其他与投资活动有关的现金'][1]}}</td>
+            </tr>
+            <tr>
+              <td>收到的税费返还</td>
+              <td>{{item.table_value['现金流量表']['收到的税费返还'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['收到的税费返还'][1]}}</td>
+              <td>投资活动现金流出小计</td>
+              <td>{{item.table_value['现金流量表']['投资活动现金流出小计'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['投资活动现金流出小计'][1]}}</td>
+            </tr>
+            <tr>
+              <td>收到其他与经营活动有关的现金</td>
+              <td>{{item.table_value['现金流量表']['收到其他与经营活动有关的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['收到其他与经营活动有关的现金'][1]}}</td>
+              <td>投资活动产生的现金流量净额</td>
+              <td>{{item.table_value['现金流量表']['投资活动产生的现金流量净额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['投资活动产生的现金流量净额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>经营活动现金流入小计</td>
+              <td>{{item.table_value['现金流量表']['经营活动现金流入小计'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['经营活动现金流入小计'][1]}}</td>
+              <td>三、筹资活动产生的现金流量：</td>
+              <td>{{item.table_value['现金流量表']['三、筹资活动产生的现金流量：'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['三、筹资活动产生的现金流量：'][1]}}</td>
+            </tr>
+            <tr>
+              <td>购买商品、接收劳务支付的现金</td>
+              <td>{{item.table_value['现金流量表']['购买商品、接收劳务支付的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['购买商品、接收劳务支付的现金'][1]}}</td>
+              <td>吸收投资收到的现金</td>
+              <td>{{item.table_value['现金流量表']['吸收投资收到的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['吸收投资收到的现金'][1]}}</td>
+            </tr>
+            <tr>
+              <td>支付给职工以及为职工支付的现金</td>
+              <td>{{item.table_value['现金流量表']['支付给职工以及为职工支付的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['支付给职工以及为职工支付的现金'][1]}}</td>
+              <td>其中：子公司吸收少数股东投资收到的现金</td>
+              <td>{{item.table_value['现金流量表']['其中：子公司吸收少数股东投资收到的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['其中：子公司吸收少数股东投资收到的现金'][1]}}</td>
+            </tr>
+            <tr>
+              <td>支付的各项税费</td>
+              <td>{{item.table_value['现金流量表']['支付的各项税费'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['支付的各项税费'][1]}}</td>
+              <td>取得借款所收到的现金</td>
+              <td>{{item.table_value['现金流量表']['取得借款所收到的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['取得借款所收到的现金'][1]}}</td>
+            </tr>
+            <tr>
+              <td>支付其他与经营活动有关的现金</td>
+              <td>{{item.table_value['现金流量表']['支付其他与经营活动有关的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['支付其他与经营活动有关的现金'][1]}}</td>
+              <td>收到其他与筹资活动有关的现金</td>
+              <td>{{item.table_value['现金流量表']['收到其他与筹资活动有关的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['收到其他与筹资活动有关的现金'][1]}}</td>
+            </tr>
+            <tr>
+              <td>经营活动现金流出小计</td>
+              <td>{{item.table_value['现金流量表']['经营活动现金流出小计'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['经营活动现金流出小计'][1]}}</td>
+              <td>筹资活动现金流入小计</td>
+              <td>{{item.table_value['现金流量表']['筹资活动现金流入小计'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['筹资活动现金流入小计'][1]}}</td>
+            </tr>
+            <tr>
+              <td>经营活动产生的现金流量净额</td>
+              <td>{{item.table_value['现金流量表']['经营活动产生的现金流量净额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['经营活动产生的现金流量净额'][1]}}</td>
+              <td>偿还债务所支付的现金</td>
+              <td>{{item.table_value['现金流量表']['偿还债务所支付的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['偿还债务所支付的现金'][1]}}</td>
+            </tr>
+            <tr>
+              <td>二、投资活动产生的现金流量：</td>
+              <td>{{item.table_value['现金流量表']['二、投资活动产生的现金流量：'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['二、投资活动产生的现金流量：'][1]}}</td>
+              <td>分配股利、利润或偿付利息所支付的现金</td>
+              <td>{{item.table_value['现金流量表']['分配股利、利润或偿付利息所支付的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['分配股利、利润或偿付利息所支付的现金'][1]}}</td>
+            </tr>
+            <tr>
+              <td>收回投资收到的现金</td>
+              <td>{{item.table_value['现金流量表']['收回投资收到的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['收回投资收到的现金'][1]}}</td>
+              <td>其中：子公司支付给少数股东的股利、利润</td>
+              <td>{{item.table_value['现金流量表']['其中：子公司支付给少数股东的股利、利润'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['其中：子公司支付给少数股东的股利、利润'][1]}}</td>
+            </tr>
+            <tr>
+              <td>取得投资收益收到的现金</td>
+              <td>{{item.table_value['现金流量表']['取得投资收益收到的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['取得投资收益收到的现金'][1]}}</td>
+              <td>支付其他与筹资活动有关的现金</td>
+              <td>{{item.table_value['现金流量表']['支付其他与筹资活动有关的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['支付其他与筹资活动有关的现金'][1]}}</td>
+            </tr>
+            <tr>
+              <td>处置固定资产、无形资产和其他长期资产所收回的现金净额</td>
+              <td>{{item.table_value['现金流量表']['处置固定资产、无形资产和其他长期资产所收回的现金净额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['处置固定资产、无形资产和其他长期资产所收回的现金净额'][1]}}</td>
+              <td>筹资活动现金流出小计</td>
+              <td>{{item.table_value['现金流量表']['筹资活动现金流出小计'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['筹资活动现金流出小计'][1]}}</td>
+            </tr>
+            <tr>
+              <td>处置子公司及其他营业单位收回的现金净额</td>
+              <td>{{item.table_value['现金流量表']['处置子公司及其他营业单位收回的现金净额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['处置子公司及其他营业单位收回的现金净额'][1]}}</td>
+              <td>筹资活动产生的现金流量净额</td>
+              <td>{{item.table_value['现金流量表']['筹资活动产生的现金流量净额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['筹资活动产生的现金流量净额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>收到其他与投资活动有关的现金</td>
+              <td>{{item.table_value['现金流量表']['收到其他与投资活动有关的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['收到其他与投资活动有关的现金'][1]}}</td>
+              <td>四、汇率变动对现金及现金等价物的影响</td>
+              <td>{{item.table_value['现金流量表']['四、汇率变动对现金及现金等价物的影响'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['四、汇率变动对现金及现金等价物的影响'][1]}}</td>
+            </tr>
+            <tr>
+              <td>投资活动现金流入小计</td>
+              <td>{{item.table_value['现金流量表']['投资活动现金流入小计'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['投资活动现金流入小计'][1]}}</td>
+              <td>五、现金及现金等价物净增加额</td>
+              <td>{{item.table_value['现金流量表']['五、现金及现金等价物净增加额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['五、现金及现金等价物净增加额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>购建固定资产、无形资产和其他长期资产所支付的现金</td>
+              <td>{{item.table_value['现金流量表']['购建固定资产、无形资产和其他长期资产所支付的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['购建固定资产、无形资产和其他长期资产所支付的现金'][1]}}</td>
+              <td>加：期初现金及现金等价物余额</td>
+              <td>{{item.table_value['现金流量表']['加：期初现金及现金等价物余额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['加：期初现金及现金等价物余额'][1]}}</td>
+            </tr>
+            <tr>
+              <td>投资支付的现金</td>
+              <td>{{item.table_value['现金流量表']['投资支付的现金'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['投资支付的现金'][1]}}</td>
+              <td>六、期末现金及现金等价物余额</td>
+              <td>{{item.table_value['现金流量表']['六、期末现金及现金等价物余额'][0]}}</td>
+              <td>{{item.table_value['现金流量表']['六、期末现金及现金等价物余额'][1]}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/vendor/jquery.ui.widget.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.iframe-transport.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.fileupload.min.js"></script>
+<script>
+$(function(){
+  $('#fileupload').fileupload({
+    dataType: 'json',
+    done: function (e, data) {
+      var list = data.result.data
+      window.location.href = 'select_data?file='+list[0];
+    },
+  }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+  $('select[name=template_id]').change(function(){
+    window.location.href='?id={{item.id}}&template_id='+this.value;
+  })
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<link href="//cdn.bootcss.com/blueimp-file-upload/9.18.0/css/jquery.fileupload.min.css" rel="stylesheet">
+<style type="text/css">
+.steps>li+li:before {
+  content:'>';
+}
+
+.breadcrumb {
+  padding-left:0;
+  margin-left: -15px;
+}
+
+.nav-tabs {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+.nav-tabs li a{
+  background-color: #c9c9c9;
+  color: #fff;
+  padding-left:10px;
+  margin-left:5px;
+  padding-right:10px;
+  margin-right: 5px;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  margin-top: 5px;
+  border-width: 0 !important;
+  border-radius: 0 !important;
+}
+.nav-tabs li.active a{
+  margin-top: 0;
+  padding-top: 10px;
+  font-size:18px;
+  background-color: #00bdd4 !important;
+  color: #fff !important;
+}
+
+.tab-content {
+  background-color:#fff;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+</style>
+{% endblock %}

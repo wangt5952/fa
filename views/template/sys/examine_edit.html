@@ -1,0 +1,127 @@
+{% extends "base/sys.html" %}
+
+{% set nav = 'examine' %}
+{% block content %}
+<div class="container">
+  <form action="?id={{item.id}}">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label>勾稽名称</label>
+          <input name="name" value="{{item.name}}" type="text" class="form-control" placeholder="{{item.default_name}}">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label>表达式</label>
+
+          <div class="tools">
+            <div id="table-name" class="btn-group">
+            </div>
+            <button type="button" data-text="=" class="btn btn-primary btn-sm act-insert-string">=</button>
+            <button type="button" data-text="+" class="btn btn-primary btn-sm act-insert-string">+</button>
+            <button type="button" data-text="-" class="btn btn-primary btn-sm act-insert-string">-</button>
+            <button type="button" data-text="*" class="btn btn-primary btn-sm act-insert-string">x</button>
+          </div>
+          <script id="editor-value" type="text/plain">{{item.content}}</script>
+          <div id="editor-content" style="height:400px;margin-top:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <button type="submit" class="btn btn-primary btn-sm">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="//cdn.bootcss.com/ace/1.2.6/ace.js"></script>
+<script src="//cdn.bootcss.com/ace/1.2.6/ext-language_tools.js"></script>
+<script src="/process/keyword"></script>
+<script type="text/template" id="tmpl-table-name">
+  <% list.forEach(function(o){ %>
+  <button type="button" data-text="${o}." data-autocomplete="true" class="btn btn-primary btn-sm act-insert-string">${o}</button>
+  <% }) %>
+</script>
+<script>
+$(function(){
+
+  $('#table-name').html(_.template($('#tmpl-table-name').html())({list:_.keys(fa_keyword)}));
+
+  ace.config.setModuleUrl('ace/snippets/fa', '/vendor/ace/snippets-fa.js');
+  ace.config.setModuleUrl('ace/mode/fa', '/vendor/ace/mode-fa.js');
+  var language_tools = ace.require("ace/ext/language_tools");
+
+  var editor = ace.edit('editor-content');
+  editor.setOptions({
+    enableBasicAutocompletion: [language_tools.keyWordCompleter],
+    enableSnippets: false,
+    enableLiveAutocompletion: false
+  });
+
+  editor.setValue($('#editor-value').html());
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/fa");
+
+  editor.on('change', function(data,editor){
+    var default_name = editor.getValue();
+    _.forEach(_.keys(fa_keyword), o=>{
+      default_name = default_name.replace(new RegExp(o+'[.]', 'g'), '');
+    })
+
+    $('input[name=name]').attr('placeholder', default_name)
+  })
+
+  $('.tools').on('click', '.act-insert-string',function(){
+    var text = $(this).data('text');
+    var autocomplete = $(this).data('autocomplete');
+    editor.insert(text);
+    editor.focus();
+    if(autocomplete){
+      editor.execCommand('startAutocomplete');
+    }
+  })
+
+  $('form').parsley().on('form:submit', function(){
+
+    var $form = this.$element;
+    var data = $form.serializeJSON();
+
+    data.content = editor.getValue();
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        if(!resp.errno){
+          history.go(-1);
+        }else{
+          alert(resp.errmsg);
+        }
+      }
+    })
+    return false;
+  })
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+  .ace_editor.ace_autocomplete{
+    width: 500px !important;
+  }
+
+</style>
+{% endblock %}

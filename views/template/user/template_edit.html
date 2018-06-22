@@ -1,0 +1,348 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+  <form action="?id={{item.id}}">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label>名称</label>
+          <input name="name" value="{{item.name}}" type="text" class="form-control">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label>表达式</label>
+          <div>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs">
+              {% for o in template_info %}
+              <li class="{{'active' if not loop.index0}}"><a href="#tab_{{loop.index0}}" data-toggle="tab">{{o.name}}</a></li>
+              {% endfor %}
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+              {% for o in template_info %}
+              <div class="tab-pane {{'active' if not loop.index0}} form-inline" id="tab_{{loop.index0}}">
+                <div class="form-group">
+                  {% set tc = item.table_config[loop.index0] %}
+
+                  这个表是：<select name="table_config[{{loop.index0}}][name]" data-value="{{tc.name}}" class="form-control select2 select-table-name" style="width:150px;">
+
+                  </select>
+                  <button class="btn btn-default act-add" data-table_idx="{{loop.index0}}" type="button">添加</button>
+                </div>
+
+                <div>
+                  <table class="table table-bordered table-config">
+                    <thead>
+                      <tr>
+                        <td>字段单元格</td>
+                        <td>期末余额单元格</td>
+                        <td>年初余额单元格</td>
+                        <td>字段单元格重命名</td>
+                        <td>操作</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+
+                <table class="table table-bordered text-center table-template">
+                  {% for row in o.table %}
+                  <tr>
+                    {% for cell in row %}
+                    {% if not cell.hide %}
+                    <td {{ cell.colspan | safe}} {{cell.rowspan | safe }} data-address="{{cell.address}}">{{cell.v}}</td>
+                    {% endif %}
+                    {% endfor %}
+                  </tr>
+                  {% endfor %}
+                </table>
+
+                {{o.cols | dump}}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <button type="submit" class="btn btn-primary btn-sm">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/template" id="tmpl-tr">
+  <tr data-idx="${idx}">
+    <td width="20%">
+      <button type="button" class="btn btn-success1 btn-xs act-select" data-class="success1">${data[0] || '点击后选择单元格'}</button>
+      <input type="hidden" name="table_config[${table_idx}][dataArea][${idx}][0]" value="${data[0]}">
+    </td>
+    <td width="20%">
+      <button type="button" class="btn btn-info1 btn-xs act-select" data-class="info1">${data[1] || '点击后选择单元格'}</button>
+      <input type="hidden" name="table_config[${table_idx}][dataArea][${idx}][1]" value="${data[1]}">
+    </td>
+    <td width="20%">
+      <button type="button" class="btn btn-warning1 btn-xs act-select" data-class="warning1">${data[2] || '点击后选择单元格'}</button>
+      <input type="hidden" name="table_config[${table_idx}][dataArea][${idx}][2]" value="${data[2]}">
+    </td>
+    <td width="20%">
+    </td>
+    <td width="20%">
+      <button type="button" class="btn btn-danger btn-xs act-select-remove">删除</button>
+    </td>
+  </tr>
+</script>
+<script src="/process/keyword"></script>
+<script>
+$(function(){
+
+  $('.select-table-name').each(function(){
+    var value = $(this).data('value');
+    var keys = _.keys(fa_keyword);
+    $(this).append(_.map([''].concat(_.keys(fa_keyword)),function(o){
+      var $opt = $('<option></option>')
+      $opt.text(o)
+      if(o == value){
+        $opt.prop('selected', true)
+      }
+      return $opt;
+    }))
+  })
+
+  $('.select2').select2({allowClear:true});
+
+  var renderTr = _.template($('#tmpl-tr').html());
+
+  {% for o in template_info %}
+  {% set tc = item.table_config[loop.index0] %}
+  {% if tc.dataArea %}
+  {% set table_idx = loop.index0 %}
+  _.forEach({{tc.dataArea | dump | safe}}, function(data, idx){
+    var rename = {{tc.dataAreaRename | dump | safe}};
+    var table_idx = '{{table_idx}}';
+    $('#tab_{{table_idx}} table.table-config tbody').append(renderTr({table_idx:table_idx, idx:idx, data:data}));
+
+    var $tr = $('#tab_{{table_idx}} table.table-config tbody tr[data-idx='+idx+']')
+    var table_name = '{{tc.name}}'
+
+    if(table_name && fa_keyword[table_name] && fa_keyword[table_name].length){
+
+      var $select = $('<select></select>')
+
+      $select.attr('name', 'table_config['+table_idx+'][dataAreaRename]['+idx+']')
+      $select.addClass('select-table-field');
+      $select.append(_.map([''].concat(fa_keyword[table_name]), function(o){
+        var $opt = $('<option></option>')
+        $opt.text(o)
+
+        if(o == rename[idx]){
+          $opt.prop('selected', true)
+        }
+        return $opt;
+      }))
+
+      $tr.find('td:eq(3)').append($select);
+      $select.select2({allowClear:true});
+    }
+
+    if(data[0]){
+      $('#tab_{{table_idx}} table.table-template td[data-address='+data[0]+']').addClass('success1');
+    }
+    if(data[1]){
+      $('#tab_{{table_idx}} table.table-template td[data-address='+data[1]+']').addClass('info1');
+    }
+    if(data[2]){
+      $('#tab_{{table_idx}} table.table-template td[data-address='+data[2]+']').addClass('warning1');
+    }
+  })
+  {% endif %}
+  {% endfor %}
+
+
+  $('.act-add').click(function(){
+    var $this = $(this);
+    var table_idx = $this.data('table_idx');
+    var $tbody = $this.parents('.tab-pane:first').find('table.table-config tbody')
+
+    var idx = $tbody.find('tr:last').data('idx');
+    if(idx == null) idx = 0;
+    else idx++;
+    $tbody.append(renderTr({table_idx, idx, data:[]}));
+
+    var table_name = $this.parents('.tab-pane:first').find('select.select-table-name').val();
+    var $tr = $tbody.find('tr[data-idx='+idx+']')
+
+    if(table_name && fa_keyword[table_name] && fa_keyword[table_name].length){
+
+      var $select = $('<select></select>')
+
+      $select.attr('name', 'table_config['+table_idx+'][dataAreaRename]['+idx+']')
+      $select.addClass('select-table-field');
+      $select.append(_.map([''].concat(fa_keyword[table_name]), function(o){
+        var $opt = $('<option></option>')
+        $opt.text(o)
+        return $opt;
+      }))
+
+      $tr.find('td:eq(3)').append($select);
+      $select.select2({allowClear:true});
+    }
+
+
+  })
+
+  var $cur_select_btn;
+
+  $('.tab-pane').on('click', '.act-select', function(){
+    if($cur_select_btn){
+      $cur_select_btn.prop('disabled', false);
+    }
+    $cur_select_btn = $(this);
+    $cur_select_btn.prop('disabled', true);
+  })
+
+  $('.tab-pane').on('click', '.act-select-remove', function(){
+    var $tr = $(this).parents('tr:first');
+    var $oth_tr = $tr.siblings('tr');
+    //console.log($tr.find('[value=A7]'))
+    $tr.find('input:hidden').each(function(){
+      var val = $(this).val();
+      var cls = $(this).siblings('button').data('class');
+      if(val){
+        var size = $oth_tr.find('button[data-class='+cls+']').siblings('input:hidden[value='+val+']').size();
+        if(!size){
+          $tr.parents('.tab-pane:first').find('table.table-template td[data-address='+val+']').removeClass(cls);
+        }
+      }
+    })
+    $tr.remove();
+  })
+
+  $('.tab-pane table.table-template').on('click', 'td', function(){
+
+    if($cur_select_btn){
+      var $this = $(this);
+      if($cur_select_btn.parents('.tab-pane:first').get(0) == $this.parents('.tab-pane:first').get(0)){
+        var address = $this.data('address')
+        $cur_select_btn.text(address)
+        var $input = $cur_select_btn.next('input');
+        var cls = $cur_select_btn.data('class');
+        var val = $input.val();
+
+        if(val){
+          var $oth_tr = $cur_select_btn.parents('tr:first').siblings('tr');
+          var size = $oth_tr.find('button[data-class='+cls+']').siblings('input:hidden[value='+val+']').size();
+          if(!size){
+            $this.parents('table.table-template').find('td[data-address='+val+']').removeClass(cls)
+          }
+        }
+
+        $input.val(address)
+        $this.addClass(cls);
+      }
+
+      $cur_select_btn.prop('disabled', false);
+      $cur_select_btn = null;
+    }
+  })
+
+  $('.tab-pane select.select-table-name').on('change', function(){
+    var $this = $(this);
+    var table_name = $this.val()
+    $this.parents('.tab-pane:first').find('select.select-table-field').each(function(){
+      var $select = $(this)
+      $select.val('').empty().trigger('change');
+
+      $select.append(_.map([''].concat(fa_keyword[table_name]), function(o){
+        var $opt = $('<option></option>')
+        $opt.text(o)
+        return $opt;
+      }))
+
+      $select.trigger('change');
+    })
+  })
+
+  $('form').parsley().on('form:submit', function(){
+
+    var $form = this.$element;
+    var data = $form.serializeJSON();
+
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        if(!resp.errno){
+          history.go(-1);
+        }else{
+          alert(resp.errmsg);
+        }
+      }
+    })
+    return false;
+  })
+
+
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+
+  .btn-success1{
+    background-color: #f88;
+  }
+  .btn-info1{
+    background-color: #8f8;
+  }
+  .btn-warning1{
+    background-color: #88f;
+  }
+  .table-template td.success1 {
+    background-color: #f88;
+  }
+  .table-template td.info1 {
+    background-color: #8f8;
+  }
+  .table-template td.warning1 {
+    background-color: #88f;
+  }
+
+  .table-template td.success1.info1 {
+    background-color: #ff8;
+  }
+
+  .table-template td.success1.warning1 {
+    background-color: #8ff;
+  }
+  .table-template td.info1.warning1 {
+    background-color: #f8f;
+  }
+
+  .table-template td.success1.info1.warning1 {
+    background-color: #fff;
+  }
+
+  .select-table-field {
+    width:200px;
+  }
+</style>
+{% endblock %}

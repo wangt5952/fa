@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="LocalhostMysql" id="Project_5d420d2" template="Default" database="MySql" >
+	<schema name="fa" catalogname="fa" >
+		<table name="fa_examine" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="name" type="longtext" length="2147483647" decimal="0" jt="-1" />
+			<column name="content" type="longtext" length="2147483647" decimal="0" jt="-1" />
+			<column name="create_time" type="timestamp" length="19" decimal="0" jt="93" mandatory="y" >
+				<defo>CURRENT_TIMESTAMP</defo>
+			</column>
+			<column name="default_name" type="longtext" length="2147483647" decimal="0" jt="-1" />
+			<index name="pk_fa_examine" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="fa_process" >
+			<column name="id" type="int" jt="4" mandatory="y" autoincrement="y" />
+			<column name="create_time" type="timestamp" jt="93" >
+				<defo>CURRENT_TIMESTAMP</defo>
+			</column>
+			<column name="table_value" type="longtext" jt="-1" />
+			<column name="user_id" type="int" jt="4" />
+			<column name="file_id" type="int" length="10" decimal="0" jt="4" />
+			<column name="examine_id" type="longtext" jt="-1" />
+			<column name="company_name" type="varchar" length="100" jt="12" />
+			<column name="year" type="int" jt="4" />
+			<column name="month" type="int" jt="4" />
+			<column name="template_id" type="int" jt="4" />
+			<index name="pk_fa_process" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="idx_fa_process" unique="NORMAL" >
+				<column name="user_id" />
+			</index>
+			<index name="idx_fa_process_0" unique="NORMAL" >
+				<column name="file_id" />
+			</index>
+			<fk name="fk_fa_process_sys_file" to_schema="fa" to_table="sys_file" delete_action="cascade" >
+				<fk_column name="file_id" pk="id" />
+			</fk>
+			<fk name="fk_fa_process_sys_user" to_schema="fa" to_table="sys_user" delete_action="cascade" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+			<storage><![CDATA[engine=InnoDB]]></storage>
+		</table>
+		<table name="fa_process_feedback" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="process_id" type="int" length="10" decimal="0" jt="4" />
+			<column name="content" type="longtext" length="2147483647" decimal="0" jt="-1" />
+			<column name="create_time" type="timestamp" length="19" decimal="0" jt="93" mandatory="y" >
+				<defo>CURRENT_TIMESTAMP</defo>
+			</column>
+			<column name="result" type="longtext" length="2147483647" decimal="0" jt="-1" />
+			<index name="pk_fa_process_feedback" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="idx_fa_process_feedback" unique="NORMAL" >
+				<column name="process_id" />
+			</index>
+			<fk name="fk_fa_process_feedback" to_schema="fa" to_table="fa_process" delete_action="cascade" >
+				<fk_column name="process_id" pk="id" />
+			</fk>
+		</table>
+		<table name="fa_template" >
+			<column name="id" type="int" jt="4" mandatory="y" autoincrement="y" />
+			<column name="user_id" type="int" jt="4" />
+			<column name="create_time" type="timestamp" jt="93" >
+				<defo>CURRENT_TIMESTAMP</defo>
+			</column>
+			<column name="name" type="varchar" length="100" jt="12" />
+			<column name="file_id" type="int" jt="4" />
+			<column name="table_config" type="longtext" jt="-1" />
+			<index name="pk_sys_template" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="idx_fa_template" unique="NORMAL" >
+				<column name="user_id" />
+			</index>
+			<index name="idx_fa_template_0" unique="NORMAL" >
+				<column name="file_id" />
+			</index>
+			<fk name="fk_fa_template_sys_user" to_schema="fa" to_table="sys_user" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+			<fk name="fk_fa_template_sys_file" to_schema="fa" to_table="sys_file" >
+				<fk_column name="file_id" pk="id" />
+			</fk>
+			<storage><![CDATA[engine=InnoDB]]></storage>
+		</table>
+		<table name="sys_config" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="name" type="varchar" length="100" decimal="0" jt="12" />
+			<column name="value" type="longtext" length="2147483647" decimal="0" jt="-1" />
+			<column name="create_time" type="timestamp" length="19" decimal="0" jt="93" mandatory="y" >
+				<defo>CURRENT_TIMESTAMP</defo>
+			</column>
+			<index name="pk_sys_config" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="sys_file" >
+			<column name="id" type="int" jt="4" mandatory="y" autoincrement="y" />
+			<column name="create_time" type="timestamp" jt="93" >
+				<defo>CURRENT_TIMESTAMP</defo>
+			</column>
+			<column name="original_name" type="varchar" length="100" jt="12" />
+			<column name="encoding" type="varchar" length="100" jt="12" />
+			<column name="mime_type" type="varchar" length="100" jt="12" />
+			<column name="destination" type="varchar" length="100" jt="12" />
+			<column name="file_name" type="varchar" length="100" jt="12" />
+			<column name="path" type="varchar" length="100" jt="12" />
+			<column name="size" type="varchar" length="100" jt="12" />
+			<index name="pk_sys_file" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<storage><![CDATA[engine=InnoDB]]></storage>
+		</table>
+		<table name="sys_user" >
+			<column name="id" type="int" jt="4" mandatory="y" autoincrement="y" />
+			<column name="username" type="varchar" length="100" jt="12" />
+			<column name="password" type="varchar" length="100" jt="12" />
+			<column name="create_time" type="timestamp" jt="93" >
+				<defo>CURRENT_TIMESTAMP</defo>
+			</column>
+			<column name="name" type="varchar" length="100" jt="12" />
+			<column name="mobile" type="varchar" length="100" jt="12" />
+			<column name="email" type="varchar" length="100" jt="12" />
+			<index name="pk_sys_user" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<storage><![CDATA[engine=InnoDB]]></storage>
+		</table>
+		<view name="v_fa_process" >
+			<view_script><![CDATA[select a.*, c.username AS user_username from fa_process a
+left join sys_user c on c.id = a.user_id]]></view_script>
+			<column name="id" type="int" />
+			<column name="create_time" type="timestamp" />
+			<column name="table_value" type="longtext" />
+			<column name="user_id" type="int" />
+			<column name="file_id" type="int" />
+			<column name="examine_id" type="longtext" />
+			<column name="company_name" type="varchar" />
+			<column name="year" type="int" />
+			<column name="month" type="int" />
+			<column name="username" type="varchar" />
+			<column name="user_username" type="varchar" />
+		</view>
+	</schema>
+	<connector name="LocalhostMysql" database="MySql" driver_class="com.mysql.jdbc.Driver" driver_jar="mysql-connector-java-5.1.43-bin.jar" driver_desc="Standard" host="localhost" port="3306" instance="fa" user="root" />
+	<connector name="server" database="MySql" driver_class="com.mysql.jdbc.Driver" driver_jar="mysql-connector-java-5.1.40-bin.jar" driver_desc="Standard" host="106.14.172.38" port="3996" instance="fa" user="fa" passwd="MTEyMjMzNDQ=" />
+	<layout name="Default Layout" id="Layout_58ae961" confirmed="y" show_relation="columns" >
+		<entity schema="fa" name="sys_user" color="c1d8ee" x="48" y="48" />
+		<entity schema="fa" name="fa_process_feedback" color="c1d8ee" x="528" y="80" />
+		<entity schema="fa" name="v_fa_process" color="c1d8ee" x="560" y="304" />
+		<entity schema="fa" name="fa_examine" color="c1d8ee" x="400" y="400" />
+		<entity schema="fa" name="sys_config" color="c1d8ee" x="224" y="384" />
+		<entity schema="fa" name="sys_file" color="c1d8ee" x="208" y="160" />
+		<entity schema="fa" name="fa_process" color="c1d8ee" x="368" y="80" />
+		<entity schema="fa" name="fa_template" color="c1d8ee" x="48" y="272" />
+		<script name="fa_examine" id="Editor_5d33726" language="SQL" confirmed="y" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.fa_examine e;]]></string>
+		</script>
+		<script name="fa_examine_001" id="Editor_ebfbdb" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.fa_examine e;]]></string>
+		</script>
+		<script name="fa_process" id="Editor_4b6650b" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.fa_process s;]]></string>
+		</script>
+		<script name="fa_process_001" id="Editor_15e15af" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.fa_process s;]]></string>
+		</script>
+		<script name="fa_process_002" id="Editor_46e18f6" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.fa_process s;]]></string>
+		</script>
+		<script name="fa_process_003" id="Editor_276c417" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.fa_process s where id = 177;]]></string>
+		</script>
+		<script name="fa_template" id="Editor_16ada4e" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.fa_template e;]]></string>
+		</script>
+		<script name="sys_file" id="Editor_45066fe" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.sys_file e;]]></string>
+		</script>
+		<script name="sys_user" id="Editor_1848a47" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.sys_user r;]]></string>
+		</script>
+		<script name="sys_user_001" id="Editor_1af735c" language="SQL" >
+			<string><![CDATA[SELECT * 
+FROM
+	fa.sys_user r;]]></string>
+		</script>
+		<browser id="Browse_3b354bd" name="fa_process_004" confirm_updates="y" >
+			<browse_table schema="fa" entity="fa_process" x="20" y="20" width="400" height="300" />
+		</browser>
+		<browser id="Browse_376c321" name="fa_template_001" confirm_updates="y" >
+			<browse_table schema="fa" entity="fa_template" x="20" y="20" width="400" height="300" />
+		</browser>
+		<browser id="Browse_4a61e89" name="sys_file_001" confirm_updates="y" >
+			<browse_table schema="fa" entity="sys_file" x="20" y="20" width="400" height="300" />
+		</browser>
+	</layout>
+</project>

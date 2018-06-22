@@ -1,0 +1,110 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12" style="margin-bottom:20px;border-bottom:1px solid #dcdcde;">
+      <div class="btn-group pull-right">
+        <a href="finish?id={{item.id}}" class="btn btn-info btn-sm act-save"><i class="fa fa-play"></i> 生成分析报告</a>
+      </div>
+      <ol class="breadcrumb steps">
+        <li><a href="#">确认财务数据</a></li>
+        <li class="active">设置分析参数</li>
+        <li><a href="#">生成分析报告</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:20px;">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="checkbox">
+            <label><input id='chk-all' type="checkbox" checked>全选 勾稽关系</label>
+          </div>
+        </div>
+        <div class="panel-body form">
+
+          <form class="main-form" action="edit?id={{item.id}}">
+            {% for o in examineList %}
+            <div class="checkbox">
+              <label><input class="chk-item" type="checkbox" name="examine_id[]" value="{{o.id}}" checked>
+                {{o.name}}
+              </label>
+            </div>
+            {% endfor %}
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/vendor/jquery.ui.widget.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.iframe-transport.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.fileupload.min.js"></script>
+<script>
+$(function(){
+  $('#fileupload').fileupload({
+    dataType: 'json',
+    done: function (e, data) {
+      var list = data.result.data
+      window.location.href = 'select_data?file='+list[0];
+    },
+  }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+  $('input#chk-all').on('change', function(){
+    $('input.chk-item').prop('checked', this.checked);
+  })
+
+  $('input.chk-item').on('change', function(){
+
+    var $td = $(this).parents('td');
+    var checked = $('input.chk-item:checked').size();
+    var checkbox = $('input.chk-item:checkbox').size();
+    //
+    $('input#chk-all').prop('checked', checked == checkbox);
+
+  })
+
+  $('.act-save').click(function(){
+    let $form = $('.main-form')
+    var href = $(this).attr('href')
+    var data = $form.serializeJSON();
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        if(!resp.errno){
+          window.location.href = href;
+        }else{
+          alert(resp.errmsg);
+        }
+      }
+    })
+    return false;
+  })
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<link href="//cdn.bootcss.com/blueimp-file-upload/9.18.0/css/jquery.fileupload.min.css" rel="stylesheet">
+<style type="text/css">
+.steps>li+li:before {
+  content:'>';
+}
+.panel-default .panel-heading {
+  background-color: #232b41;
+  color:#fff;
+}
+.panel-default .panel-body {
+  background-color: #fff;
+}
+</style>
+{% endblock %}

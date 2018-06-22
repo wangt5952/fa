@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="viewport" content="width=device-width,height=device-height,maximum-scale=1.0,user-scalable=no">
+    <title>{{title}}</title>
+
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/toastr.js/2.1.3/toastr.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/datatables/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/select2/3.5.4/select2.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/select2/3.5.4/select2-bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+    #example td {
+      vertical-align: middle;
+    }
+    </style>
+    {% block css %}
+    {% endblock %}
+  </head>
+  <body>
+    {% if not hideNav %}
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <ul class="nav navbar-nav">
+
+          {% if session.authMap['user'] or session.authMap['user.query']%}
+          <li class="{{'active' if nav=='user'}}">
+            <a href="/sys/user">用户管理</a>
+          </li>
+          {% endif %}
+
+          <li class="{{'active' if nav=='process'}}">
+            <a href="/sys/process">分析管理</a>
+          </li>
+
+          <li class="{{'active' if nav=='process_feedback'}}">
+            <a href="/sys/process_feedback">反馈管理</a>
+          </li>
+
+          <li class="{{'active' if nav=='examine'}}">
+            <a href="examine">勾稽管理</a>
+          </li>
+
+          <li class="{{'active' if nav=='stat'}}">
+            <a href="#">统计查询</a>
+          </li>
+
+          <li class="dropdown {{'active' if nav=='config'}}">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">系统设置 <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="fa_table_field">设置报表和字段</a></li>
+            </ul>
+          </li>
+
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{session.user_name}} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="/user/password">修改密码</a></li>
+            </ul>
+          </li>
+          <li><a href="/user/logout">退出</a></li>
+
+        </ul>
+      </div>
+    </nav>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+
+    <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/lodash.js/3.10.1/lodash.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <script src="//cdn.bootcss.com/parsley.js/2.7.2/parsley.min.js"></script>
+    <script src="//cdn.bootcss.com/toastr.js/2.1.3/toastr.min.js"></script>
+    <script src="//cdn.bootcss.com/datatables/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.bootcss.com/datatables/1.10.15/js/dataTables.bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/select2/3.5.4/select2.js"></script>
+    <script src="//cdn.bootcss.com/jquery.serializeJSON/2.8.1/jquery.serializejson.min.js"></script>
+
+    {% block script %}
+    {% endblock %}
+  </body>
+</html>

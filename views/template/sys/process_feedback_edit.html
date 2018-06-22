@@ -1,0 +1,67 @@
+{% extends "base/sys.html" %}
+
+{% set nav = 'process_feedback' %}
+{% block content %}
+<div class="container">
+  <form action="?id={{item.id}}">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label>反馈</label>
+          <script class="ueditor-container" type="text/plain" id="ue-content" style="height:240px;" name="content">{{item.content | safe}}</script>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label>结果</label>
+          <script class="ueditor-container" type="text/plain" id="ue-result" style="height:240px;" name="result">{{item.result | safe}}</script>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-sm-6">
+        <button type="submit" class="btn btn-primary btn-sm">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="/vendor/ueditor/ueditor.config.js"></script>
+<script src="/vendor/ueditor/ueditor.all.js"></script>
+
+<script>
+$(function(){
+  $('.ueditor-container').each(function(){
+    UE.getEditor(this.id);
+  })
+
+
+  $('form').parsley().on('form:submit', function(){
+
+    var $form = this.$element;
+    var data = $form.serializeJSON()
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        if(!resp.errno){
+          history.go(-1);
+        }else{
+          alert(resp.errmsg);
+        }
+      }
+    })
+    return false;
+  })
+
+})
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row" style="margin-top:20px;">
+    <div class="col-sm-12">
+      <div class="btn-group">
+        <span class="btn btn-default btn-sm fileinput-button">
+          <span class="glyphicon glyphicon-cloud-upload"></span> 上传财务报表
+          <input id="fileupload" type="file" name="files[]" data-url="/util/upload">
+        </span>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row" style="margin-top:20px;">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          历史分析结果
+        </div>
+        <div class="panel-body">
+
+          {% for o in processList %}
+          <p>[{{o.create_time}}] <a href="/process/finish?id={{o.id}}">xxx公司分析结果</a></p>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/vendor/jquery.ui.widget.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.iframe-transport.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.fileupload.min.js"></script>
+<script>
+$(function(){
+  $('#fileupload').fileupload({
+    dataType: 'json',
+    done: function (e, data) {
+      var list = data.result.data
+      //window.location.href = 'select_table?file='+list[0];
+      $.ajax({
+        url: '/process/create',
+        type: 'POST',
+        data: {file_id:list[0]},
+        success: function(resp){
+          if(resp.data){
+            window.location.href = '/process/select_table?id='+resp.data.id;
+          }
+
+          console.log(resp);
+        }
+      })
+    },
+  }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<link href="//cdn.bootcss.com/blueimp-file-upload/9.18.0/css/jquery.fileupload.min.css" rel="stylesheet">
+<style type="text/css">
+
+</style>
+{% endblock %}

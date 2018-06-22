@@ -1,0 +1,16 @@
+{
+  "apps": [{
+    "name": "fa",
+    "script": "build",
+    "cwd": "/www/fa",
+    "exec_mode": "cluster",
+    "instances": 1,
+    "max_memory_restart": "1G",
+    "autorestart": true,
+    "node_args": [],
+    "args": [],
+    "env": {
+      "NODE_ENV":"production"
+    }
+  }]
+}

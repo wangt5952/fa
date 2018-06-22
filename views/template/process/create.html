@@ -1,0 +1,161 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row" style="margin-bottom:20px;">
+    <div class="col-sm-12">
+      <div class="btn-group">
+        <span class="btn btn-default btn-sm fileinput-button">
+          <span class="glyphicon glyphicon-cloud-upload"></span> 上传财务报表
+          <input id="fileupload" type="file" name="files[]" data-url="/util/upload">
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {% if not session.user_id %}
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="alert alert-warning">
+        <span class="glyphicon glyphicon-info-sign"></span>
+        如需保存，请先<a href="/user/login">登录</a>或<a href="/user/join">注册</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          财务报表分析系统介绍
+        </div>
+        <div class="panel-body">
+          <p style="color:#353889;">财务报表分析系统对财务报表使用上百种勾稽关系进行分析，减少大量人工分析时间，降低人工分析带来的错误。软件操作为以下几个步骤：</p>
+          <p>1.上传财务报表</p>
+          <p>2.确认财务数据</p>
+          <p>3.设置分析参数</p>
+          <p>4.生成分析结果</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {% if processList %}
+  <div class="row" style="margin-top:20px;">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          历史分析结果
+          <div class="pull-right">
+            <a href="list">查看全部</a>
+          </div>
+        </div>
+        <div class="panel-body">
+
+          {% for o in processList %}
+          <p>
+            <a href="/process/finish?id={{o.id}}">
+              {% if o.company_name and o.year and o.month %}
+              {{o.company_name}} {{o.year}}年{{o.month}}报表
+              {% else %}
+              时间：{{o.create_time.toLocaleString()}} 编号：{{o.id}}
+              {% endif %}
+            </a>
+            <a class="btn btn-info btn-xs" href="/process/edit?id={{o.id}}">设置基本信息</a>
+            <button class="btn btn-danger btn-xs act-confirm" data-title='确认删除？' data-text="确认删除{{o.id}}？" data-href="/process/edit?act=del&id={{o.id}}">删除</button></p>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/vendor/jquery.ui.widget.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.iframe-transport.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.fileupload.min.js"></script>
+<script>
+$(function(){
+  $('#fileupload').fileupload({
+    dataType: 'json',
+    done: function (e, data) {
+      var list = data.result.data
+      //window.location.href = 'select_table?file='+list[0];
+      $.ajax({
+        url: '#',
+        type: 'POST',
+        data: {file_id:list[0]},
+        success: function(resp){
+          console.log(resp);
+          if(resp.data){
+            window.location.href = 'select_table?id='+resp.data.id;
+          }
+        }
+      })
+    },
+  }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+
+  $('body').on('click', '.act-confirm', function(){
+    var $this = $(this);
+    var href = $this.data('href');
+    var title = $this.data('title') || '确认提交',
+        text = $this.data('text') || '确认提交:'+href+' 吗?';
+    swal({
+      title: title,
+      text: text,
+      type: "warning",
+      showCancelButton: true,
+    },function(isConfirm){
+      if (isConfirm) {
+        $.ajax({
+          url:href,
+          type:'POST',
+          success: function(){
+            window.location.reload();
+          }
+        })
+      }
+    });
+  })
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<link href="//cdn.bootcss.com/blueimp-file-upload/9.18.0/css/jquery.fileupload.min.css" rel="stylesheet">
+<style type="text/css">
+  .fileinput-button {
+    color: #fff;
+    background-color: #00bdd4;
+    border-width: 0;
+  }
+
+  .alert-warning {
+    background-color: transparent;
+    border-width: 0px;
+    color: #000;
+  }
+  .alert .glyphicon-info-sign {
+    color:red;
+  }
+  .panel-default .panel-heading {
+    background-color: #232b41;
+    color: #fff;
+  }
+  .panel-default .panel-heading a {
+    color: #fff;
+  }
+  .panel-default .panel-body {
+    background-color: #fff;
+  }
+
+</style>
+{% endblock %}

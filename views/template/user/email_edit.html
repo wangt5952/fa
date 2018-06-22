@@ -1,0 +1,102 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+
+  <form action="#">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label>邮箱</label>
+              <input name="email" type="email" class="form-control" data-parsley-trigger="change" required data-parsley-required-message="请输入邮箱" data-parsley-type-message="邮箱格式不正确" autocomplete="off">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary btn-sm">发送验证链接</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(function(){
+
+  $('form').parsley()
+  .on('form:error', function(){
+    console.log('error')
+  })
+  .on('form:success', function(){
+    console.log('success')
+  })
+  .on('field:error', function(){
+
+  })
+  .on('form:submit', function(){
+
+    var $form = this.$element;
+    var data = $form.serializeJSON()
+    return false;
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        if(!resp.errno){
+          history.go(-1);
+        }else{
+          alert(resp.errmsg);
+        }
+      }
+    })
+    return false;
+  })
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<style>
+input.parsley-success,
+select.parsley-success,
+textarea.parsley-success {
+  color: #468847;
+  background-color: #DFF0D8;
+  border: 1px solid #D6E9C6;
+}
+
+input.parsley-error,
+select.parsley-error,
+textarea.parsley-error {
+  color: #B94A48;
+  background-color: #F2DEDE;
+  border: 1px solid #EED3D7;
+}
+
+.parsley-errors-list {
+  margin: 2px 0 3px;
+  padding: 0;
+  list-style-type: none;
+  font-size: 0.9em;
+  line-height: 0.9em;
+  opacity: 0;
+
+  transition: all .3s ease-in;
+  -o-transition: all .3s ease-in;
+  -moz-transition: all .3s ease-in;
+  -webkit-transition: all .3s ease-in;
+}
+
+.parsley-errors-list.filled {
+  opacity: 1;
+}
+</style>
+{% endblock %}

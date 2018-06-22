@@ -1,0 +1,110 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="btn-group">
+        <span class="btn btn-default btn-sm fileinput-button">
+          <span class="glyphicon glyphicon-cloud-upload"></span> 上传报表模版
+          <input id="fileupload" type="file" name="files[]" data-url="/util/upload">
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:20px;">
+    <div class="col-sm-12">
+      <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/vendor/jquery.ui.widget.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.iframe-transport.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-file-upload/9.18.0/js/jquery.fileupload.min.js"></script>
+
+<script type="text/template" id="tmpl-oper">
+  <a href="template_edit?id=${id}" class="btn btn-info btn-sm">编辑</a>
+
+  <button data-title='确认删除？' data-text="确认删除${name}？" data-href="template_edit?act=del&id=${id}" class="btn btn-danger btn-sm act-confirm">删除</button>
+</script>
+<script>
+$(function(){
+
+  $('#fileupload').fileupload({
+    dataType: 'json',
+    done: function (e, data) {
+      var list = data.result.data
+      //window.location.href = 'select_table?file='+list[0];
+      $.ajax({
+        url: 'template_edit',
+        type: 'POST',
+        data: {file_id:list[0]},
+        success: function(resp){
+          console.log(resp);
+          if(resp.data){
+            window.location.href = 'template_edit?id='+resp.data.id;
+          }
+        }
+      })
+    },
+  }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+  var renderOper = _.template($('#tmpl-oper').html());
+  var dt = $('#example').DataTable({
+    ajax:'#',
+    columns:[
+      {data:'name'},
+      {data:'create_time'},
+      {data:'id', width: 100, render:function(data, display, row){ return renderOper(row);}}
+    ],
+    language:{
+      url: '/json/datatables_chinese.json'
+    },
+    serverSide:true,
+    paging: true,
+  });
+
+  $('#example').on('click', '.act-confirm', function(){
+    var $this = $(this);
+    var href = $this.data('href');
+    var title = $this.data('title') || '确认提交',
+        text = $this.data('text') || '确认提交:'+href+' 吗?';
+    swal({
+      title: title,
+      text: text,
+      type: "warning",
+      showCancelButton: true,
+    },function(isConfirm){
+      if (isConfirm) {
+        $.ajax({
+          url:href,
+          type:'POST',
+          success: function(){
+            dt.draw();
+          }
+        })
+      }
+    });
+  })
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<link href="//cdn.bootcss.com/blueimp-file-upload/9.18.0/css/jquery.fileupload.min.css" rel="stylesheet">
+{% endblock %}

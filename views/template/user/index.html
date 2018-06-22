@@ -1,0 +1,32 @@
+{% extends "base/user.html" %}
+
+{% set nav = 'index' %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <table id="example" class="table table-bordered">
+        <thead>
+          <tr>
+            <th>标示</th>
+            <th>应用</th>
+            <th>入口</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in appList %}
+          <tr>
+            <td>{{o.shortcut}}</td>
+            <td>{{o.app_name}} </td>
+            <td>
+              <a class="btn btn-info btn-sm" href="/{{o.shortcut}}">前台</a> <a class="btn btn-warning btn-sm" href="/{{o.shortcut}}/admin">后台</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

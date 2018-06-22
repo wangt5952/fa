@@ -1,0 +1,13 @@
+node_modules
+
+.idea
+.jpg
+yarn.lock
+build
+
+runtime/template/*
+runtime/captcha/*
+runtime/image/*
+runtime/session/*
+runtime/upload/*
+!.gitkeep

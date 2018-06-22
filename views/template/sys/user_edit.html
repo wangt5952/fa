@@ -1,0 +1,129 @@
+{% extends "base/sys.html" %}
+
+{% set nav = 'user' %}
+{% block content %}
+<div class="container">
+  <form action="?id={{item.id}}">
+    {% if session.authMap['user'] or session.authMap['user.edit'] %}
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label>姓名</label>
+          <input name="name" value="{{item.name}}" type="text" class="form-control">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label>登录账号</label>
+          <input name="username" value="{{item.username}}" type="text" class="form-control">
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label>登录密码</label>
+          <div class="input-group">
+            <span class="input-group-addon">
+              <input type="checkbox" name="set_password">
+            </span>
+            <input name="password" type="text" class="form-control" disabled>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if session.authMap['user'] or session.authMap['user.auth'] %}
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <label>功能权限</label>
+          <div class="auth-table">
+
+            <table class="table table-bordered">
+              {% for o in authList %}
+              <tr>
+                <td width="200">
+                  <label class="checkbox-inline">
+                    <input name="auth[]" type="checkbox" value="{{o.code}}" {{'checked' if item.authMap[o.code]}}> {{o.name}}
+                  </lable>
+                </td>
+                <td>
+                  {% for p in o.children %}
+                  <label class="checkbox-inline">
+                    <input name="auth[]" type="checkbox" value="{{p.code}}" {{'checked' if item.authMap[p.code]}}> {{p.name}}
+                  </label>
+                  {% endfor %}
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <button type="submit" class="btn btn-primary btn-sm">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(function(){
+  $('.select2').select2();
+
+  $('input[name=set_password]').on('change', function(){
+
+    if(this.checked){
+      $('input[name=password]').removeAttr('disabled');
+    }else{
+      $('input[name=password]').attr('disabled', true);
+    }
+  })
+
+  $('form').parsley().on('form:submit', function(){
+
+    var $form = this.$element;
+    var data = $form.serializeJSON()
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        if(!resp.errno){
+          history.go(-1);
+        }else{
+          alert(resp.errmsg);
+        }
+      }
+    })
+    return false;
+  })
+
+  $('.auth-table table tr td:nth-child(1) input').on('change', function(){
+    $(this).parents('td').next('td').find('input').prop('checked', this.checked);
+  })
+
+  $('.auth-table table tr td:nth-child(2) input').on('change', function(){
+
+    var $td = $(this).parents('td');
+    var checked = $td.find('input:checked').size();
+    var checkbox = $td.find('input:checkbox').size();
+    //
+    $td.prev('td').find('input').prop('checked', checked == checkbox);
+
+  })
+})
+</script>
+{% endblock %}

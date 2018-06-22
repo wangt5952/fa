@@ -1,0 +1,253 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+  <form class="form-inline form-search" action="#">
+    <div class="row">
+      <span>企业名称：</span>
+      <select name="company_name" class="form-control select2" style="width:200px;">
+        {% for o in companyList %}
+        <option value="{{o.key}}" {{'selected' if o.key == company_name}}>{{o.value}}</option>
+        {% endfor %}
+      </select>
+
+      <span style="margin-left:10px;">时间段：</span>
+
+      <div class="input-daterange input-group" id="datepicker">
+        <input name="stage_start" value="{{stage_start}}" type="text" class="input-sm form-control" style="width:80px;" autocomplete="off" />
+        <span class="input-group-addon">至</span>
+        <input name="stage_end" value="{{stage_end}}" type="text" class="input-sm form-control" style="width:80px;" autocomplete="off" />
+      </div>
+
+      {% if company_name and company_name != 'unset' %}
+      <span style="margin-left:10px;">显示方式：</span>
+      <div class="btn-group" role="group" aria-label="...">
+        <a href="list?company_name={{company_name}}&stage_start={{stage_start}}&stage_end={{stage_end}}&display_type=chart" class="btn {{'btn-primary' if display_type == 'chart' else 'btn-default'}} btn-sm"><span class="glyphicon glyphicon-stats"></span> 图表</a>
+        <a href="list?company_name={{company_name}}&stage_start={{stage_start}}&stage_end={{stage_end}}&display_type=list" class="btn {{'btn-primary' if display_type == 'list' else 'btn-default'}} btn-sm"><span class="glyphicon glyphicon-list"></span> 列表</a>
+      </div>
+      <input type="hidden" name="display_type" value="{{display_type}}">
+      {% endif %}
+    </div>
+
+    {% if display_type == 'chart' %}
+    <div class="row" style="margin-top:20px;">
+      <span>财务指标：</span>
+      <select name="k1" class="form-control select2" style="width:150px;">
+        {% for o in k1List %}
+        <option {{'selected' if o == k1}}>{{o}}</option>
+        {% endfor %}
+      </select>
+
+      <select name="k2" class="form-control select2" style="width:250px;">
+        {% for o in k2List %}
+        <option {{'selected' if o == k2}}>{{o}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+  </form>
+
+  {% if display_type == 'list'%}
+  <div class="row" style="margin-top:20px;">
+    <div class="col-sm-12">
+      <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>公司名称</th>
+            <th>年</th>
+            <th>月</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% elif display_type == 'chart' %}
+
+  <div class="row" style="margin-top:20px;">
+    <div class="col-sm-12">
+      <div id="main" style="width: 100%;height:400px;"></div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+{% if display_type == 'list'%}
+<script type="text/template" id="tmpl-oper">
+  <a href="/process/finish?id=${id}" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="查看">
+    <span class="glyphicon glyphicon-eye-open"></span>
+  </a>
+
+  <a href="/process/edit?id=${id}" class="btn btn-info btn-sm" data-toggle="tooltip" data-placement="top" title="设置基本信息">
+    <span class="glyphicon glyphicon-cog"></span>
+  </a>
+
+  <button data-title='确认删除？' data-text="确认删除${name}？" data-toggle="tooltip" data-placement="top" title="删除" data-href="/process/edit?act=del&id=${id}" class="btn btn-danger btn-sm act-confirm">
+    <span class="glyphicon glyphicon-remove"></span>
+  </button>
+</script>
+{% endif %}
+<script src="//cdn.bootcss.com/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+<script src="//cdn.bootcss.com/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+<script>
+$(function(){
+
+  $('.form-search select').on('change', function(){
+    var $form = $(this).parents('.form-search');
+    $form.submit();
+  })
+
+  var subform = _.debounce(function(){
+    var $form = $(this).parents('.form-search');
+    $form.submit();
+  },100)
+
+  $('[name=stage_start],[name=stage_end]')
+    .on('change', subform)
+
+  $('.input-daterange').datepicker({
+    minViewMode: 1,
+    maxViewMode: 2,
+    format: "yyyy-mm",
+    language: 'zh-CN',
+    clearBtn: true
+  });
+
+  $('.select2').select2();
+
+
+})
+</script>
+
+{% if display_type == 'list' %}
+<script>
+$(function(){
+  $('[data-toggle=tooltip]').tooltip();
+  var renderOper = _.template($('#tmpl-oper').html());
+  var dt = $('#example').DataTable({
+    ajax:'?company_name={{company_name}}&stage_start={{stage_start}}&stage_end={{stage_end}}&display_type={{display_type}}',
+    columns:[
+      {data:'company_name'},
+      {data:'year'},
+      {data:'month'},
+      {data:'create_time'},
+      {data:'id', width: 100, render:function(data, display, row){ return renderOper(row);}}
+    ],
+    language:{
+      url: '/json/datatables_chinese.json'
+    },
+    serverSide:true,
+    paging: true,
+    initComplete: function(){
+      $('#example [data-toggle=tooltip]').tooltip();
+    }
+  });
+
+  $('#example').on('click', '.act-confirm', function(){
+    var $this = $(this);
+    var href = $this.data('href');
+    var title = $this.data('title') || '确认提交',
+        text = $this.data('text') || '确认提交:'+href+' 吗?';
+    swal({
+      title: title,
+      text: text,
+      type: "warning",
+      showCancelButton: true,
+    },function(isConfirm){
+      if (isConfirm) {
+        $.ajax({
+          url:href,
+          type:'POST',
+          success: function(){
+            dt.draw();
+          }
+        })
+      }
+    });
+  })
+})
+</script>
+{% elif display_type == 'chart' %}
+<script src="//cdn.bootcss.com/echarts/3.7.1/echarts.min.js"></script>
+<script>
+$(function(){
+  var list = {{list |dump|safe}}
+  var myChart = echarts.init(document.getElementById('main'));
+
+  // 指定图表的配置项和数据
+  var option = {
+      title: {
+          text: '{{company_name}}'
+      },
+      tooltip: {},
+      legend: {
+          data:['{{k1}}.{{k2}}']
+      },
+      xAxis: {
+          data: _.map(list, 'stage')
+      },
+      yAxis: {},
+      series: [{
+          name: '{{k1}}.{{k2}}',
+          type: 'bar',
+          data:  _.map(list, 'value'),
+          barWidth:50
+      }]
+  };
+
+  // 使用刚指定的配置项和数据显示图表。
+  myChart.setOption(option);
+})
+</script>
+{% endif %}
+
+{% endblock %}
+
+{% block css %}
+<link href="//cdn.bootcss.com/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css" rel="stylesheet"><style>
+
+.dataTables_filter {
+  display: none !important;
+}
+
+#example_wrapper{
+
+}
+
+#example_wrapper>div:nth-child(2){
+  min-height: 500px;
+  border: 1px solid #ddd;
+  border-bottom: 0;
+}
+
+#example_wrapper>div:nth-child(2)>div{
+  padding:0;
+}
+
+#example_wrapper>div:nth-child(2)>div>table{
+  margin-top:0 !important;
+  border-left: 0;
+  border-top: 0;
+  border-right: 0;
+}
+
+#example_wrapper>div:nth-child(1){
+  border: 1px solid #ddd;
+  border-bottom: 0;
+  padding-top: 10px;
+}
+
+#example_wrapper>div:nth-child(3){
+  border: 1px solid #ddd;
+  border-top: 0;
+}
+
+</style>
+{% endblock %}

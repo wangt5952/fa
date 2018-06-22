@@ -1,0 +1,81 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+  <form action="#">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label>公司名称</label>
+              <input name="company_name" value="{{item.company_name}}" type="text" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label>年</label>
+              <select name="year" class="form-control">
+                {% for o in yearList %}
+                <option {{'selected' if o == item.year}}>{{o}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label>月</label>
+              <select name="month" class="form-control">
+                {% for o in monthList %}
+                <option {{'selected' if o == item.month}}>{{o}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary btn-sm">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(function(){
+
+  $('form').parsley().on('form:submit', function(){
+
+    var $form = this.$element;
+    var data = $form.serializeJSON()
+
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        if(!resp.errno){
+          history.go(-1);
+        }else{
+          alert(resp.errmsg);
+        }
+      }
+    })
+    return false;
+  })
+})
+</script>
+{% endblock %}

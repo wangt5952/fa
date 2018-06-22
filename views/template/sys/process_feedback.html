@@ -1,0 +1,87 @@
+{% extends "base/sys.html" %}
+
+{% set nav = 'process_feedback' %}
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>编号</th>
+            <th>分析编号</th>
+            <th>内容</th>
+            <th>处理结果</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/template" id="tmpl-oper">
+  <a href="process_feedback_edit?id=${id}" class="btn btn-info btn-sm">编辑</a>
+  <div class="btn-group">
+    <a href="/process/finish?id=${process_id}" class="btn btn-default btn-sm">查看分析</a>
+    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="/process/select_table?id=${process_id}">财务数据</a></li>
+      <li><a href="/util/download?file_id=${process_id}">下载报表</a></li>
+    </ul>
+  </div>
+
+  <button data-title='确认删除？' data-text="确认删除${id}？" data-href="process_feedback_edit?act=del&id=${id}" class="btn btn-danger btn-sm act-confirm">删除</button>
+</script>
+<script>
+$(function(){
+  var renderOper = _.template($('#tmpl-oper').html());
+  var dt = $('#example').DataTable({
+    ajax:'#',
+    columns:[
+      {data:'id'},
+      {data:'process_id'},
+      {data:'content'},
+      {data:'result'},
+      {data:'create_time'},
+      {data:'id', render:function(data, display, row){ return renderOper(row);}}
+    ],
+    language:{
+      url: '/json/datatables_chinese.json'
+    },
+    serverSide:true,
+    paging: true,
+  });
+
+  $('#example').on('click', '.act-confirm', function(){
+    var $this = $(this);
+    var href = $this.data('href');
+    var title = $this.data('title') || '确认提交',
+        text = $this.data('text') || '确认提交:'+href+' 吗?';
+    swal({
+      title: title,
+      text: text,
+      type: "warning",
+      showCancelButton: true,
+    },function(isConfirm){
+      if (isConfirm) {
+        $.ajax({
+          url:href,
+          type:'POST',
+          success: function(){
+            dt.draw();
+          }
+        })
+      }
+    });
+  })
+})
+</script>
+{% endblock %}

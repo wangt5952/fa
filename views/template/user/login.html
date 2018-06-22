@@ -1,0 +1,109 @@
+{% extends "base/bs.html" %}
+
+{% block content %}
+<div class="container">
+  <form action="#">
+    <div class="row" id="mydiv">
+
+      <div class="col-sm-6 login-left hidden-xs"></div>
+      <div class="col-sm-6  login-right">
+
+        <div class="row">
+          <div class="col-sm-12" style="color:#fff;font-size:18px;margin-top:2px;">
+            财务报表分析系统
+          </div>
+        </div>
+        <div class="row" style="margin-top:20px;">
+          <div class="col-sm-12">
+            <div style="width:70px;float:left;margin-top:5px;" class="text-center">账&nbsp;&nbsp;&nbsp;&nbsp;号</div>
+            <div style="margin-left:70px;width:200px;">
+              <input name="username" type="text" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:20px;">
+          <div class="col-sm-12">
+            <div style="width:70px;float:left;margin-top:5px;" class="text-center">密&nbsp;&nbsp;&nbsp;&nbsp;码</div>
+            <div style="margin-left:70px;width:200px;">
+              <input name="password" type="password" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:60px;">
+          <div class="col-sm-12">
+            <button type="submit" class="btn btn-primary btn-sm">登&nbsp;&nbsp;&nbsp;&nbsp;录</button>
+            <a style="color:#fff;" href="#">忘记密码？</a> <a style="color:#fff;" href="/user/join">立即注册</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(function(){
+
+  console.log($(window).height());
+  console.log($("#mydiv").outerHeight())
+  $('#mydiv').css({
+    'margin-top':($(window).height() - $("#mydiv").outerHeight())/2 - 72
+  })
+
+
+
+  $('form').parsley().on('form:submit', function(){
+
+    var $form = this.$element;
+    var data = $form.serializeJSON()
+
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: data,
+      success: function(resp){
+        if(!resp.errno){
+          window.location.href=resp.data.home;
+        }else{
+          alert(resp.errmsg);
+        }
+      }
+    })
+    return false;
+  })
+})
+</script>
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+  .login-left {
+    background-repeat: no-repeat;
+    background-position: right;
+    background-image: url(/image/login-left.jpg);
+    height: 260px;
+  }
+  .login-right {
+    background-repeat: no-repeat;
+    background-position: left;
+    background-image: url(/image/login-right.jpg);
+    height: 260px;
+  }
+
+  .form-control {
+    border-radius: 0;
+  }
+
+  button[type=submit] {
+    margin-left:80px;
+    width: 100px;
+    background-image: url(/image/btn-bg.png);
+    border-color: #888;
+  }
+
+</style>
+{% endblock %}
